@@ -29,17 +29,45 @@ import kotlin.math.min
 class ResourcePackManager {
     private val appliedPacks: MutableMap<ServerPlayerEntity, List<ResourcePack>> = mutableMapOf()
 
-    fun applyPlayer(player: ServerPlayerEntity) {
+    fun updateAllPlayer() {
         val config = main?.configManager?.config ?: return
         val resourcePacks = main?.configManager?.resourcePacks ?: return
 
-        if (!config.sendOnJoin || config.resourcePacks.isEmpty()) {
+        if (!config.autoSend || config.resourcePacks.isEmpty()) {
+            return
+        }
+
+        appliedPacks.forEach { (player, _) ->
+            main?.logger?.info("Reloading resourcePack to ${player.name.string}")
+
+            updatePlayerResourcePacks(
+                player,
+                resourcePacks,
+                config.resourcePacks,
+                config.required,
+                config.promptMessage
+            )
+        }
+    }
+
+    fun applyPlayer(player: ServerPlayerEntity, isByCommand: Boolean = false) {
+        val config = main?.configManager?.config ?: return
+        val resourcePacks = main?.configManager?.resourcePacks ?: return
+
+        if ((!config.autoSend && !isByCommand) || config.resourcePacks.isEmpty()) {
             return
         }
 
         main?.logger?.info("Sending resourcePack to ${player.name.string}")
 
-        updatePlayerResourcePacks(player, resourcePacks, config.resourcePacks, config.required, config.promptMessage)
+        updatePlayerResourcePacks(
+            player,
+            resourcePacks,
+            config.resourcePacks,
+            config.required,
+            config.promptMessage,
+            isByCommand
+        )
     }
 
     // Remove player resource packs state
@@ -52,18 +80,23 @@ class ResourcePackManager {
         resourcePacks: MutableMap<String, ResourcePack>,
         packs: MutableList<String>,
         required: Boolean,
-        promptMessage: String
+        promptMessage: String,
+        resend: Boolean = false
     ) {
         val new = packs.mapNotNull { resourcePacks[it] }
         val old = this.appliedPacks.getOrElse(player) { listOf() }
 
         // Matching new resource packs
-        var updateIndex = old.lastIndex
-        for (i in 0..min(old.size, new.size)) {
-            if (!old.getOrNull(i)?.hash.contentEquals(new.getOrNull(i)?.hash)) {
-                updateIndex = i
-                break
+        var updateIndex = old.size
+        if (!resend) {
+            for (i in 0..min(old.size, new.size)) {
+                if (old.getOrNull(i)?.hash != new.getOrNull(i)?.hash) {
+                    updateIndex = i
+                    break
+                }
             }
+        } else {
+            updateIndex = 0
         }
 
         // Remove not match resource packs

@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.jimchen5209.serverResourcePackManager.util
+package me.jimchen5209.serverResourcePackManager.command
 
-data class ResourcePackConfig(
-    var autoSend: Boolean = true,
-    var promptMessage: String = "",
-    var required: Boolean = false,
-    var resourcePacks: MutableList<String> = mutableListOf()
-)
+import com.mojang.brigadier.CommandDispatcher
+import net.minecraft.server.command.ServerCommandSource
+
+interface Command {
+    fun register(dispatcher: CommandDispatcher<ServerCommandSource>)
+}

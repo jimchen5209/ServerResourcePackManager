@@ -68,7 +68,7 @@ class ModConfig {
 
     private fun createDefaultConfig(): ResourcePackConfig {
         return ResourcePackConfig(
-            sendOnJoin = true,
+            autoSend = true,
             promptMessage = "",
             required = false,
             resourcePacks = mutableListOf()

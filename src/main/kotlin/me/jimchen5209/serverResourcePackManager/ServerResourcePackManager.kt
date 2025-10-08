@@ -22,9 +22,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
+import me.jimchen5209.serverResourcePackManager.command.ResourcePackManagerCommand
 import me.jimchen5209.serverResourcePackManager.util.ModConfig
 import me.jimchen5209.serverResourcePackManager.util.ResourcePackManager
 import net.fabricmc.api.DedicatedServerModInitializer
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.minecraft.server.dedicated.MinecraftDedicatedServer
@@ -34,7 +36,8 @@ import kotlin.coroutines.CoroutineContext
 
 class ServerResourcePackManager : DedicatedServerModInitializer, CoroutineScope {
     private val job = SupervisorJob()
-    private lateinit var resourcePackManager: ResourcePackManager
+    lateinit var resourcePackManager: ResourcePackManager
+        private set
     lateinit var server: MinecraftDedicatedServer
         private set
     override val coroutineContext: CoroutineContext
@@ -57,6 +60,10 @@ class ServerResourcePackManager : DedicatedServerModInitializer, CoroutineScope 
     }
 
     private fun registerEvents() {
+        CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher, _, _ ->
+            listOf(ResourcePackManagerCommand()).forEach { dispatcher.let(it::register) }
+        })
+
         ServerPlayConnectionEvents.JOIN.register { handler, _, _ ->
             resourcePackManager.applyPlayer(handler.player)
         }
