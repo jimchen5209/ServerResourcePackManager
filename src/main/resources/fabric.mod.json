@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "server-resource-pack-manager",
+  "version": "${version}",
+  "name": "ServerResourcePackManager",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "AGPL-3.0",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "me.jimchen5209.serverResourcePackManager.ServerResourcePackManager"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
