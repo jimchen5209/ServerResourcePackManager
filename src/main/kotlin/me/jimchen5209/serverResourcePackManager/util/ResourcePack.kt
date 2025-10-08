@@ -1,0 +1,54 @@
+package me.jimchen5209.serverResourcePackManager.util
+
+import com.google.common.hash.Hashing
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.InputStream
+import java.net.URI
+import java.util.UUID
+
+class ResourcePack private constructor(url: String) {
+    companion object {
+        suspend fun new(url: String): ResourcePack = withContext(Dispatchers.IO) { ResourcePack(url) }
+    }
+    var uuid: UUID
+        private set
+    var uri = URI(url)
+        private set
+    var hash = ""
+        private set
+
+    init {
+        this.hash = getHashFromUri(uri)
+        this.uuid = UUID.nameUUIDFromBytes(uri.toURL().readBytes())
+    }
+
+    @Throws(FileNotFoundException::class)
+    @Suppress("UnstableApiUsage", "DEPRECATION")
+    private fun getHashFromUri(uri: URI): String {
+        try {
+            val hasher = Hashing.sha1().newHasher()
+            openStream(uri).use { input ->
+                val buf = ByteArray(256)
+                while (true) {
+                    val read = input.read(buf)
+                    if (read <= 0) {
+                        break
+                    }
+                    hasher.putBytes(buf, 0, read)
+                }
+            }
+            return hasher.hash().toString()
+        } catch (e: IOException) {
+            val ex = FileNotFoundException(e.toString())
+            ex.initCause(e)
+            throw ex
+        }
+    }
+    @Throws(IOException::class)
+    private fun openStream(uri: URI): InputStream {
+        return uri.toURL().openStream()
+    }
+}
