@@ -31,7 +31,7 @@ class ResourcePackManagerCommand : Command {
     override fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
         dispatcher.register(
             CommandManager.literal("resourcePackManager")
-            .requires { source -> source.hasPermissionLevel(2) }
+            .requires(CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK))
             .then(CommandManager.literal("reload").executes { context -> reloadConfig(context.source) })
             .then(
                 CommandManager.literal("send").then(
