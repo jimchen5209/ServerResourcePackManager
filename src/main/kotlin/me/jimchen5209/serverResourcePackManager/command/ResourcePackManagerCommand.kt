@@ -21,53 +21,53 @@ package me.jimchen5209.serverResourcePackManager.command
 import com.mojang.brigadier.CommandDispatcher
 import kotlinx.coroutines.launch
 import me.jimchen5209.serverResourcePackManager.ServerResourcePackManager.Companion.main
-import net.minecraft.command.argument.GameProfileArgumentType
-import net.minecraft.server.command.CommandManager
-import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.text.Text
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands
+import net.minecraft.commands.arguments.GameProfileArgument
+import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerPlayer
 
 class ResourcePackManagerCommand : Command {
-    override fun register(dispatcher: CommandDispatcher<ServerCommandSource>) {
+    override fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(
-            CommandManager.literal("resourcePackManager")
-            .requires(CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK))
-            .then(CommandManager.literal("reload").executes { context -> reloadConfig(context.source) })
+            Commands.literal("resourcePackManager")
+            .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+            .then(Commands.literal("reload").executes { context -> reloadConfig(context.source) })
             .then(
-                CommandManager.literal("send").then(
-                    CommandManager.argument("player", GameProfileArgumentType.gameProfile()).executes { context ->
-                            val targetPlayer = GameProfileArgumentType.getProfileArgument(context, "player").first()
-                            val player = main?.server?.playerManager?.getPlayer(targetPlayer.id)
+                Commands.literal("send").then(
+                    Commands.argument("player", GameProfileArgument.gameProfile()).executes { context ->
+                            val targetPlayer = GameProfileArgument.getGameProfiles(context, "player").first()
+                            val player = main?.server?.playerList?.getPlayer(targetPlayer.id)
                                 ?: return@executes com.mojang.brigadier.Command.SINGLE_SUCCESS
-                            context.source.sendFeedback({
-                                Text.literal("Sending resourcePack to ").append(player.name)
+                            context.source.sendSuccess({
+                                Component.literal("Sending resourcePack to ").append(player.name)
                             }, true)
                             sendPack(player)
                             return@executes com.mojang.brigadier.Command.SINGLE_SUCCESS
                         }).executes { context ->
                     val player = context.source.player
                     if (player == null) {
-                        context.source.sendMessage(Text.of("Player is required for this command."))
+                        context.source.sendSystemMessage(Component.literal("Player is required for this command."))
                         return@executes com.mojang.brigadier.Command.SINGLE_SUCCESS
                     }
-                    context.source.sendMessage(Text.of("Reloading resource pack..."))
+                    context.source.sendSystemMessage(Component.literal("Reloading resource pack..."))
                     sendPack(player)
                     return@executes com.mojang.brigadier.Command.SINGLE_SUCCESS
                 }))
     }
 
-    private fun reloadConfig(source: ServerCommandSource): Int {
-        source.sendFeedback({ Text.of("Reloading config...") }, true)
+    private fun reloadConfig(source: CommandSourceStack): Int {
+        source.sendSuccess({ Component.literal("Reloading config...") }, true)
         main?.launch {
             main?.configManager?.loadConfig()
             main?.resourcePackManager?.updateAllPlayer()
-            source.sendFeedback({ Text.of("Reload completed!") }, true)
+            source.sendSuccess({ Component.literal("Reload completed!") }, true)
             main?.logger?.info("Loaded ResourcesPacks: ${main?.configManager?.config?.resourcePacks?.size}")
         }
         return com.mojang.brigadier.Command.SINGLE_SUCCESS
     }
 
-    private fun sendPack(player: ServerPlayerEntity) {
+    private fun sendPack(player: ServerPlayer) {
         main?.resourcePackManager?.applyPlayer(player, true)
     }
 }
