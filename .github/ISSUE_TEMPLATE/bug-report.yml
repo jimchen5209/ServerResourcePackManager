@@ -1,0 +1,78 @@
+name: Bug Report
+description: Report issues caused by Server ResourcePack Manager
+body:
+  - id: describe
+    type: textarea
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - id: behavior
+    type: textarea
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - id: minecraft-version
+    type: input
+    attributes:
+      label: Installed Minecraft version
+    validations:
+      required: true
+  - id: fabric-version
+    type: input
+    attributes:
+      label: Installed Fabric Loader version
+    validations:
+      required: true
+  - id: fabric-api-version
+    type: input
+    attributes:
+      label: Installed Fabric API version
+    validations:
+      required: true
+  - id: fabric-language-kotlin-version
+    type: input
+    attributes:
+      label: Installed Fabric Language Kotlin version
+    validations:
+      required: true
+  - id: mod-version
+    type: input
+    attributes:
+      label: Server ResourcePack Manager version
+    validations:
+      required: true
+  - id: config
+    type: textarea
+    attributes:
+      label: server-resource-pack-manager.json
+      description: Provide you config
+      render: toml
+    validations:
+      required: true
+  - id: server-log
+    type: textarea
+    attributes:
+      label: Server log
+      description: Provide as complete a server log as possible, preferably including a list of mods.
+      render: text
+    validations:
+      required: true
+  - id: client-log
+    type: textarea
+    attributes:
+      label: Client log
+      description: Provide any related logs on the client side, leave it blank if you are sure the issue is not related to the client.
+      render: text
+    validations:
+      required: false
+  - id: additional
+    type: textarea
+    attributes:
+      label: Additional Information
+      description: Provide more information about the issue.
+    validations:
+      required: false
