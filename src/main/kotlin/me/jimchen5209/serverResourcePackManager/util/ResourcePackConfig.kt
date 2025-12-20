@@ -19,8 +19,8 @@
 package me.jimchen5209.serverResourcePackManager.util
 
 data class ResourcePackConfig(
-    var autoSend: Boolean = true,
-    var promptMessage: String = "",
-    var required: Boolean = false,
-    var resourcePacks: MutableList<String> = mutableListOf()
+    val autoSend: Boolean = true,
+    val promptMessage: String = "",
+    val required: Boolean = false,
+    val resourcePacks: List<String> = listOf()
 )
