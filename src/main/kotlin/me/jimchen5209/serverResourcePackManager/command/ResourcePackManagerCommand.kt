@@ -31,11 +31,11 @@ class ResourcePackManagerCommand : Command {
     override fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(
             Commands.literal("resourcePackManager")
-            .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
-            .then(Commands.literal("reload").executes { context -> reloadConfig(context.source) })
-            .then(
-                Commands.literal("send").then(
-                    Commands.argument("player", GameProfileArgument.gameProfile()).executes { context ->
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("reload").executes { context -> reloadConfig(context.source) })
+                .then(
+                    Commands.literal("send").then(
+                        Commands.argument("player", GameProfileArgument.gameProfile()).executes { context ->
                             val targetPlayer = GameProfileArgument.getGameProfiles(context, "player").first()
                             val player = main?.server?.playerList?.getPlayer(targetPlayer.id)
                                 ?: return@executes com.mojang.brigadier.Command.SINGLE_SUCCESS
@@ -45,15 +45,16 @@ class ResourcePackManagerCommand : Command {
                             sendPack(player)
                             return@executes com.mojang.brigadier.Command.SINGLE_SUCCESS
                         }).executes { context ->
-                    val player = context.source.player
-                    if (player == null) {
-                        context.source.sendSystemMessage(Component.literal("Player is required for this command."))
+                        val player = context.source.player
+                        if (player == null) {
+                            context.source.sendSystemMessage(Component.literal("Player is required for this command."))
+                            return@executes com.mojang.brigadier.Command.SINGLE_SUCCESS
+                        }
+                        context.source.sendSystemMessage(Component.literal("Reloading resource pack..."))
+                        sendPack(player)
                         return@executes com.mojang.brigadier.Command.SINGLE_SUCCESS
-                    }
-                    context.source.sendSystemMessage(Component.literal("Reloading resource pack..."))
-                    sendPack(player)
-                    return@executes com.mojang.brigadier.Command.SINGLE_SUCCESS
-                }))
+                    })
+        )
     }
 
     private fun reloadConfig(source: CommandSourceStack): Int {
@@ -62,7 +63,6 @@ class ResourcePackManagerCommand : Command {
             main?.configManager?.loadConfig()
             main?.resourcePackManager?.updateAllPlayer()
             source.sendSuccess({ Component.literal("Reload completed!") }, true)
-            main?.logger?.info("Loaded ResourcesPacks: ${main?.configManager?.config?.resourcePacks?.size}")
         }
         return com.mojang.brigadier.Command.SINGLE_SUCCESS
     }

@@ -1,0 +1,33 @@
+queue_rules:
+  - name: dev-queue
+    queue_conditions:
+      - and:
+          - base=dev
+          - check-success=build (21, ubuntu-latest)
+          - check-success=build (21, windows-latest)
+          - 'label!=status:blocked'
+
+pull_request_rules:
+  - name: Auto Merge renovate minor dep
+    conditions:
+      - base=dev
+      - 'label!=status:blocked'
+      - author=renovate[bot]
+      - 'label=status:ready-to-merge'
+      - '#commits-behind<5'
+      - check-success=build (21, ubuntu-latest)
+      - check-success=build (21, windows-latest)
+    actions:
+      merge:
+
+  - name: Merge branch into dev (Label)
+    conditions:
+      - base=dev
+      - 'label!=status:blocked'
+      - author!=renovate[bot]
+      - 'label=status:ready-to-merge'
+      - check-success=build (21, ubuntu-latest)
+      - check-success=build (21, windows-latest)
+    actions:
+      queue:
+        name: dev-queue

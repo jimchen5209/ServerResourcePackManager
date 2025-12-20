@@ -1,0 +1,67 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "type:dependencies"
+  ],
+  "schedule": [
+    "after 11pm every weekend",
+    "before 8am every weekend"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "gradle",
+        "gradle-wrapper"
+      ],
+      "addLabels": [
+        "package:gradle"
+      ]
+    },
+    {
+      "groupName": "GitHub Actions",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "addLabels": [
+        "package:github-actions"
+      ]
+    },
+    {
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "automerge": false,
+      "addLabels": [
+        "update:minor"
+      ]
+    },
+    {
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false,
+      "addLabels": [
+        "update:major"
+      ]
+    },
+    {
+      "matchUpdateTypes": [
+        "pin",
+        "pinDigest",
+        "digest",
+        "lockFileMaintenance",
+        "rollback",
+        "bump",
+        "replacement"
+      ],
+      "automerge": false,
+      "addLabels": [
+        "update:misc"
+      ]
+    }
+  ]
+}

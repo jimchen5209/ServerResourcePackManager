@@ -82,11 +82,6 @@ class ServerResourcePackManager : DedicatedServerModInitializer, CoroutineScope 
             }
         }
 
-        ServerLifecycleEvents.SERVER_STARTED.register {
-            val config = configManager.config
-            logger.info("Loaded ResourcesPacks: ${config.resourcePacks.size}")
-        }
-
         ServerLifecycleEvents.SERVER_STOPPING.register {
             job.complete()
         }
