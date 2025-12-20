@@ -25,12 +25,13 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.net.URI
-import java.util.UUID
+import java.util.*
 
 class ResourcePack private constructor(url: String) {
     companion object {
         suspend fun new(url: String): ResourcePack = withContext(Dispatchers.IO) { ResourcePack(url) }
     }
+
     var uuid: UUID
         private set
     var uri = URI(url)
@@ -65,6 +66,7 @@ class ResourcePack private constructor(url: String) {
             throw ex
         }
     }
+
     @Throws(IOException::class)
     private fun openStream(uri: URI): InputStream {
         return uri.toURL().openStream()
