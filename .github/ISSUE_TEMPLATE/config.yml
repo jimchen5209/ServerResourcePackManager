@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Feature request or ideas
+    about: I have no plans for new features, but if you have any ideas, you can start a discussion.  
+    url: https://github.com/jimchen5209/ServerResourcePackManager/discussions/new?category=ideas
+  - name: I need Help
+    about: Ask the community about any issues with the mod that are not caused by a bug. If you have a bug to report, please use the bug report form.  
+    url: https://github.com/jimchen5209/ServerResourcePackManager/discussions/categories/q-a
