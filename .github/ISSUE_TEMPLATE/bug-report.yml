@@ -50,7 +50,7 @@ body:
     attributes:
       label: server-resource-pack-manager.json
       description: Provide you config
-      render: toml
+      render: json
     validations:
       required: true
   - id: server-log

@@ -1,6 +1,6 @@
 # Server ResourcePack Manager
 
-Multi Server ResourcePack Manager from [Galaxy Proxy](https://github.com/OKTW-Network/Galaxy-proxy) on OKTW Network, but for single delicated server.
+Multi Server ResourcePack Manager from [Galaxy Proxy](https://github.com/OKTW-Network/Galaxy-proxy) on OKTW Network, but for a single dedicated server.
 
 ## Features
 
@@ -14,7 +14,7 @@ Multi Server ResourcePack Manager from [Galaxy Proxy](https://github.com/OKTW-Ne
 
 1. Install [Fabric](https://fabricmc.net/use/) modloader on your Minecraft server.
 2. Install [Fabric API](https://modrinth.com/mod/fabric-api) and [Fabric Language Kotlin](https://modrinth.com/mod/fabric-language-kotlin).
-3. Install the mod
+3. Install the mod from [Releases](https://github.com/jimchen5209/ServerResourcePackManager/releases) or [Modrinth](https://modrinth.com/mod/server-resourcepack-manager).
 4. Start server to generate config
 
 ## Configuration
@@ -26,7 +26,7 @@ The configuration file is located at `config/server-resource-pack-manager.json`.
 | `autoSend` | Automatically send ResourcePack(s) on player join | `true` |
 | `promptMessage` | Message displayed to players when prompting for ResourcePack(s) | `""` |
 | `required` | Whether to enforce server ResourcePack(s) | `false` |
-|`resourcePacks` | List of ResourcePack URLs | `[]` |
+| `resourcePacks` | List of ResourcePack URLs | `[]` |
 
 ### Multi ResourcePack
 
@@ -50,14 +50,14 @@ The first ResourcePack will be applied first, followed by the second, and so on.
 
 In this example, `resourcepack1.zip` will be applied first, followed by `resourcepack2.zip`.
 
-Applied resourcePacks will showed in-game settings menu in the this order.
+Applied resource packs will be shown in the in-game settings menu in this order.
 
 ![](https://github.com/user-attachments/assets/18dc5224-7f46-46ce-91e9-562fd8a7b262)
 
 ## Commands
 
 - `/resourcePackManager reload` - Reload the configuration file and update ResourcePacks.
-- `/resourcePackManager send [player]` - Re-apply ResourcePacks to the specified player or self if no player is specified.
+- `/resourcePackManager send [player]` - Re-apply ResourcePacks to the specified player, or yourself if no player is specified.
 
 ## Development
 
