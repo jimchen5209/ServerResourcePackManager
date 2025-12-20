@@ -29,7 +29,7 @@ import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
-import net.minecraft.server.dedicated.MinecraftDedicatedServer
+import net.minecraft.server.dedicated.DedicatedServer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import kotlin.coroutines.CoroutineContext
@@ -38,7 +38,7 @@ class ServerResourcePackManager : DedicatedServerModInitializer, CoroutineScope 
     private val job = SupervisorJob()
     lateinit var resourcePackManager: ResourcePackManager
         private set
-    lateinit var server: MinecraftDedicatedServer
+    lateinit var server: DedicatedServer
         private set
     override val coroutineContext: CoroutineContext
         get() = job + server.asCoroutineDispatcher()
@@ -73,7 +73,7 @@ class ServerResourcePackManager : DedicatedServerModInitializer, CoroutineScope 
         }
 
         ServerLifecycleEvents.SERVER_STARTING.register {
-            server = it as MinecraftDedicatedServer
+            server = it as DedicatedServer
             resourcePackManager = ResourcePackManager()
             configManager = ModConfig()
 

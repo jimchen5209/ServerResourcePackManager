@@ -19,15 +19,15 @@
 package me.jimchen5209.serverResourcePackManager.util
 
 import me.jimchen5209.serverResourcePackManager.ServerResourcePackManager.Companion.main
-import net.minecraft.network.packet.s2c.common.ResourcePackRemoveS2CPacket
-import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket
-import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
+import net.minecraft.network.protocol.common.ClientboundResourcePackPopPacket
+import net.minecraft.network.protocol.common.ClientboundResourcePackPushPacket
+import net.minecraft.server.level.ServerPlayer
 import java.util.*
 import kotlin.math.min
 
 class ResourcePackManager {
-    private val appliedPacks: MutableMap<ServerPlayerEntity, List<ResourcePack>> = mutableMapOf()
+    private val appliedPacks: MutableMap<ServerPlayer, List<ResourcePack>> = mutableMapOf()
 
     fun updateAllPlayer() {
         val config = main?.configManager?.config ?: return
@@ -49,7 +49,7 @@ class ResourcePackManager {
         }
     }
 
-    fun applyPlayer(player: ServerPlayerEntity, isByCommand: Boolean = false) {
+    fun applyPlayer(player: ServerPlayer, isByCommand: Boolean = false) {
         val config = main?.configManager?.config ?: return
         val resourcePacks = main?.configManager?.getMappedResourcePacks() ?: return
 
@@ -69,12 +69,12 @@ class ResourcePackManager {
     }
 
     // Remove player resource packs state
-    fun removePlayer(player: ServerPlayerEntity) {
+    fun removePlayer(player: ServerPlayer) {
         appliedPacks.remove(player)
     }
 
     private fun updatePlayerResourcePacks(
-        player: ServerPlayerEntity,
+        player: ServerPlayer,
         newPacks: List<ResourcePack>,
         required: Boolean,
         promptMessage: String,
@@ -108,24 +108,24 @@ class ResourcePackManager {
         appliedPacks[player] = newPacks
     }
 
-    private fun removePack(player: ServerPlayerEntity, pack: ResourcePack) {
-        player.networkHandler.sendPacket(ResourcePackRemoveS2CPacket(Optional.of(pack.uuid)))
+    private fun removePack(player: ServerPlayer, pack: ResourcePack) {
+        player.connection.send(ClientboundResourcePackPopPacket(Optional.of(pack.uuid)))
     }
 
     private fun sendPack(
-        player: ServerPlayerEntity,
+        player: ServerPlayer,
         pack: ResourcePack,
         required: Boolean,
         promptMessage: String
     ) {
         val promptText = if (promptMessage.isNotBlank()) {
-            Text.of(promptMessage)
+            Component.literal(promptMessage)
         } else {
             null
         }
 
-        player.networkHandler.sendPacket(
-            ResourcePackSendS2CPacket(
+        player.connection.send(
+            ClientboundResourcePackPushPacket(
                 pack.uuid,
                 pack.uri.toURL().toString(),
                 pack.hash,

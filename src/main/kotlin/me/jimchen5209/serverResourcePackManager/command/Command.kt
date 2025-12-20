@@ -19,8 +19,8 @@
 package me.jimchen5209.serverResourcePackManager.command
 
 import com.mojang.brigadier.CommandDispatcher
-import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.commands.CommandSourceStack
 
 interface Command {
-    fun register(dispatcher: CommandDispatcher<ServerCommandSource>)
+    fun register(dispatcher: CommandDispatcher<CommandSourceStack>)
 }
