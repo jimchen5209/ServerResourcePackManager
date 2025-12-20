@@ -21,6 +21,9 @@ package me.jimchen5209.serverResourcePackManager.util
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParseException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.io.IOException
 import me.jimchen5209.serverResourcePackManager.ServerResourcePackManager.Companion.main
 import net.fabricmc.loader.api.FabricLoader
@@ -57,13 +60,17 @@ class ModConfig {
 
         main?.logger?.info("Processing resource packs, please wait...")
 
-        val newResourcePacks = mutableMapOf<String, ResourcePack>()
-        loadedConfig.resourcePacks.forEach { url ->
-            try {
-                newResourcePacks[url] = ResourcePack.new(url)
-            } catch (e: IOException) {
-                main?.logger?.error("Failed to process resource pack: $url", e)
-            }
+        val newResourcePacks = coroutineScope {
+            loadedConfig.resourcePacks.distinct().map { url ->
+                async {
+                    try {
+                        url to ResourcePack.new(url)
+                    } catch (e: IOException) {
+                        main?.logger?.error("Failed to process resource pack: $url", e)
+                        null
+                    }
+                }
+            }.awaitAll().filterNotNull().toMap()
         }
 
         this.state = ConfigState(loadedConfig, newResourcePacks)
