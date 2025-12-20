@@ -13,7 +13,8 @@
   "packageRules": [
     {
       "matchManagers": [
-        "gradle"
+        "gradle",
+        "gradle-wrapper"
       ],
       "addLabels": [
         "package:gradle"
