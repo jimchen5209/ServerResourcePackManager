@@ -11,12 +11,14 @@ Multi Server ResourcePack Manager from [Galaxy Proxy](https://github.com/OKTW-Ne
 - Send command to re-apply ResourcePacks to player(s)
 
 ## Installation
+
 1. Install [Fabric](https://fabricmc.net/use/) modloader on your Minecraft server.
 2. Install [Fabric API](https://modrinth.com/mod/fabric-api) and [Fabric Language Kotlin](https://modrinth.com/mod/fabric-language-kotlin).
 3. Install the mod
 4. Start server to generate config
 
 ## Configuration
+
 The configuration file is located at `config/server-resource-pack-manager.json`. You can add multiple ResourcePacks by specifying their URL.
 
 | Name | Description | Default |
@@ -27,9 +29,13 @@ The configuration file is located at `config/server-resource-pack-manager.json`.
 |`resourcePacks` | List of ResourcePack URLs | `[]` |
 
 ### Multi ResourcePack
-The order of ResourcePacks in the list determines the order they are applied.  
-The first ResourcePack will be applied first, followed by the second, and so on. If there are duplicate ResourcePack keys, the first occurrence takes precedence.  
+
+The order of ResourcePacks in the list determines the order they are applied.
+
+The first ResourcePack will be applied first, followed by the second, and so on. If there are duplicate ResourcePack keys, the first occurrence takes precedence.
+
 #### Example
+
 ```json
 {
   "autoSend": true,
@@ -41,17 +47,22 @@ The first ResourcePack will be applied first, followed by the second, and so on.
   ]
 }
 ```
+
 In this example, `resourcepack1.zip` will be applied first, followed by `resourcepack2.zip`.
+
 Applied resourcePacks will showed in-game settings menu in the this order.
 
+![](https://github.com/user-attachments/assets/18dc5224-7f46-46ce-91e9-562fd8a7b262)
 
 ## Commands
+
 - `/resourcePackManager reload` - Reload the configuration file and update ResourcePacks.
 - `/resourcePackManager send [player]` - Re-apply ResourcePacks to the specified player or self if no player is specified.
 
-
 ## Development
-Recommended IDE: [IntelliJ IDEA](https://www.jetbrains.com/idea/)  
+
+Recommended IDE: [IntelliJ IDEA](https://www.jetbrains.com/idea/)
+
 This mod is developed using [Fabric](https://fabricmc.net/) modding framework and [Kotlin](https://kotlinlang.org/).
 
 To build the mod, use the Gradle wrapper:
