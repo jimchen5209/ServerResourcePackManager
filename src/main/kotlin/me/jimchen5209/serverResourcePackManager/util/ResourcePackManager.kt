@@ -83,10 +83,11 @@ class ResourcePackManager {
         val oldPacks = this.appliedPacks.getOrElse(player) { listOf() }
 
         // Matching new resource packs
-        var updateIndex = oldPacks.size
+        val commonSize = min(oldPacks.size, newPacks.size)
+        var updateIndex = commonSize
         if (!resend) {
-            for (i in 0..min(oldPacks.size, newPacks.size)) {
-                if (oldPacks.getOrNull(i)?.hash != newPacks.getOrNull(i)?.hash) {
+            for (i in 0 until commonSize) {
+                if (oldPacks[i].hash != newPacks[i].hash) {
                     updateIndex = i
                     break
                 }
@@ -99,7 +100,9 @@ class ResourcePackManager {
         oldPacks.subList(updateIndex, oldPacks.size).forEach { removePack(player, it) }
 
         // Add new resource packs
-        newPacks.subList(updateIndex, newPacks.size).forEach { sendPack(player, it, required, promptMessage) }
+        if (updateIndex < newPacks.size) {
+            newPacks.subList(updateIndex, newPacks.size).forEach { sendPack(player, it, required, promptMessage) }
+        }
 
         // Save player resource packs state
         appliedPacks[player] = newPacks
