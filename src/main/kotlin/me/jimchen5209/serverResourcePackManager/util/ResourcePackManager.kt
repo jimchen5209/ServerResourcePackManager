@@ -31,9 +31,9 @@ class ResourcePackManager {
 
     fun updateAllPlayer() {
         val config = main?.configManager?.config ?: return
-        val resourcePacks = main?.configManager?.resourcePacks ?: return
+        val resourcePacks = main?.configManager?.getMappedResourcePacks() ?: return
 
-        if (!config.autoSend || config.resourcePacks.isEmpty()) {
+        if (!config.autoSend || resourcePacks.isEmpty()) {
             return
         }
 
@@ -43,7 +43,6 @@ class ResourcePackManager {
             updatePlayerResourcePacks(
                 player,
                 resourcePacks,
-                config.resourcePacks,
                 config.required,
                 config.promptMessage
             )
@@ -52,9 +51,9 @@ class ResourcePackManager {
 
     fun applyPlayer(player: ServerPlayerEntity, isByCommand: Boolean = false) {
         val config = main?.configManager?.config ?: return
-        val resourcePacks = main?.configManager?.resourcePacks ?: return
+        val resourcePacks = main?.configManager?.getMappedResourcePacks() ?: return
 
-        if ((!config.autoSend && !isByCommand) || config.resourcePacks.isEmpty()) {
+        if ((!config.autoSend && !isByCommand) || resourcePacks.isEmpty()) {
             return
         }
 
@@ -63,7 +62,6 @@ class ResourcePackManager {
         updatePlayerResourcePacks(
             player,
             resourcePacks,
-            config.resourcePacks,
             config.required,
             config.promptMessage,
             isByCommand
@@ -77,20 +75,18 @@ class ResourcePackManager {
 
     private fun updatePlayerResourcePacks(
         player: ServerPlayerEntity,
-        resourcePacks: MutableMap<String, ResourcePack>,
-        packs: MutableList<String>,
+        newPacks: List<ResourcePack>,
         required: Boolean,
         promptMessage: String,
         resend: Boolean = false
     ) {
-        val new = packs.mapNotNull { resourcePacks[it] }
-        val old = this.appliedPacks.getOrElse(player) { listOf() }
+        val oldPacks = this.appliedPacks.getOrElse(player) { listOf() }
 
         // Matching new resource packs
-        var updateIndex = old.size
+        var updateIndex = oldPacks.size
         if (!resend) {
-            for (i in 0..min(old.size, new.size)) {
-                if (old.getOrNull(i)?.hash != new.getOrNull(i)?.hash) {
+            for (i in 0..min(oldPacks.size, newPacks.size)) {
+                if (oldPacks.getOrNull(i)?.hash != newPacks.getOrNull(i)?.hash) {
                     updateIndex = i
                     break
                 }
@@ -100,13 +96,13 @@ class ResourcePackManager {
         }
 
         // Remove not match resource packs
-        old.subList(updateIndex, old.size).forEach { removePack(player, it) }
+        oldPacks.subList(updateIndex, oldPacks.size).forEach { removePack(player, it) }
 
         // Add new resource packs
-        new.subList(updateIndex, new.size).forEach { sendPack(player, it, required, promptMessage) }
+        newPacks.subList(updateIndex, newPacks.size).forEach { sendPack(player, it, required, promptMessage) }
 
         // Save player resource packs state
-        appliedPacks[player] = new.toList()
+        appliedPacks[player] = newPacks
     }
 
     private fun removePack(player: ServerPlayerEntity, pack: ResourcePack) {

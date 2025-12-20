@@ -62,7 +62,6 @@ class ResourcePackManagerCommand : Command {
             main?.configManager?.loadConfig()
             main?.resourcePackManager?.updateAllPlayer()
             source.sendFeedback({ Text.of("Reload completed!") }, true)
-            main?.logger?.info("Loaded ResourcesPacks: ${main?.configManager?.config?.resourcePacks?.size}")
         }
         return com.mojang.brigadier.Command.SINGLE_SUCCESS
     }

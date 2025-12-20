@@ -30,9 +30,9 @@ import kotlin.io.path.writer
 class ModConfig {
     private val configPath = FabricLoader.getInstance().configDir.resolve("server-resource-pack-manager.json")
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+    private val resourcePacks: MutableMap<String, ResourcePack> = mutableMapOf()
     var config: ResourcePackConfig = createDefaultConfig()
         private set
-    val resourcePacks: MutableMap<String, ResourcePack> = mutableMapOf()
 
     suspend fun loadConfig() {
         if (configPath.exists()) {
@@ -40,7 +40,7 @@ class ModConfig {
                 configPath.reader().use { reader ->
                     config = gson.fromJson(reader, ResourcePackConfig::class.java)
                 }
-            }catch (e: IOException) {
+            } catch (e: IOException) {
                 main?.logger?.error("Failed to load config", e)
                 config = createDefaultConfig()
                 saveConfig()
@@ -51,9 +51,12 @@ class ModConfig {
         }
         resourcePacks.clear()
 
+        main?.logger?.info("Processing resource packs, please wait...")
         config.resourcePacks.forEach {
             resourcePacks[it] = ResourcePack.new(it)
         }
+
+        main?.logger?.info("Loaded ResourcePacks: ${getMappedResourcePacks().size}")
     }
 
     fun saveConfig() {
@@ -64,6 +67,10 @@ class ModConfig {
         } catch (e: IOException) {
             main?.logger?.error("Failed to save config", e)
         }
+    }
+
+    fun getMappedResourcePacks(): List<ResourcePack> {
+        return config.resourcePacks.mapNotNull { resourcePacks[it] }.distinctBy { pack -> pack.hash }
     }
 
     private fun createDefaultConfig(): ResourcePackConfig {
